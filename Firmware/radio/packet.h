@@ -76,7 +76,7 @@ extern void packet_inject(__xdata uint8_t *buf, __pdata uint8_t len);
 
 // pprzlink markers
 #define PPRZ_STX  0x99
-#define PPRZ_RSSI_ID 28
+#define PPRZ_RSSI_ID 39
 #define PPRZ_RSSI_LENGTH 11
 #define PPRZ_PONG_ID 3
 #define PPRZ_PONG_LENGTH 6
