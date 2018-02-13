@@ -620,77 +620,110 @@ tdm_serial_loop(void)
 
              // inject rssi packet if requested
              if (feature_pprzlink_rssi){
-				 // check the ac_id value
-				 if (rx_ac_id == 0) {
-					 __pdata uint8_t i;
-					 for(i=0;i<len-2;i++){
-						 if (pbuf[i]==PPRZ_STX) {
-							 rx_ac_id = pbuf[i+2];
-							 break;
-						 }
-					 }
-				 }
+               // check the ac_id value
+               if (rx_ac_id == 0) {
+                 __pdata uint8_t i;
+                 for(i=0;i<len-PPRZ_SENDER_ID_IDX;i++){
+                   if (pbuf[i]==PPRZ_STX) {
+                     rx_ac_id = pbuf[i+PPRZ_SENDER_ID_IDX];
+                     break;
+                   }
+                 }
+               }
 
-				 // check if there is enough space in the buffer
-				 if ((len+PPRZ_RSSI_LENGTH) < sizeof(pbuf)){
-					 __pdata uint8_t i;
-					 for(i=0;i<len-3;i++){
-						 // check if we have
-						 // PPRZ_STX header
-						 // and PONG_LENGTH
-						 // and PONG_ID
-						 if (pbuf[i]==PPRZ_STX && pbuf[i+1]==PPRZ_PONG_LENGTH && pbuf[i+3]==PPRZ_PONG_ID) {
-							 // we need to send RSSI, lets just add RSSI after PONG - sadly we loose the data that come after
+               // check if there is enough space in the buffer
+               if ((len+PPRZ_RSSI_LENGTH) < sizeof(pbuf)){
+                 __pdata uint8_t i;
+                 for(i=0;i<len-PPRZ_MSG_ID_IDX;i++){
+                   // check if we have
+                   // PPRZ_STX header
+                   // and PONG_LENGTH
+                   // and PONG_ID
+                   if (pbuf[i]==PPRZ_STX && // STX byte
+                       pbuf[i+PPRZ_LENGTH_IDX]==PPRZ_PONG_LENGTH && // correct length
+                       pbuf[i+PPRZ_MSG_ID_IDX]==PPRZ_PONG_ID) { // correct ID
+                     // we need to send RSSI, lets just add RSSI after PONG
+                     // - sadly we loose the data that come after
 
-							 // fill in the packet
-							 uint8_t ck_a_tx;
-							 uint8_t ck_b_tx;
-							 ck_a_tx = 0;
-							 ck_b_tx = 0;
-							 i=i+6;
-							 pbuf[i] = PPRZ_STX;
-							 pbuf[i+1] = PPRZ_RSSI_LENGTH;
-							 ck_a_tx += pbuf[i+1];
-							 ck_b_tx += ck_a_tx;
+                     // fill in the packet
+                     uint8_t ck_a_tx;
+                     uint8_t ck_b_tx;
+                     ck_a_tx = 0;
+                     ck_b_tx = 0;
+                     i += PPRZ_PONG_LENGTH; // append after pong message
+                     pbuf[i] = PPRZ_STX; // STX
+                     i++;
+                     pbuf[i] = PPRZ_RSSI_LENGTH; // MSG len
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
 
-							 pbuf[i+2] = rx_ac_id;
-							 ck_a_tx += pbuf[i+2];
-							 ck_b_tx += ck_a_tx;
+                     pbuf[i] = rx_ac_id; // SENDER ID
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
 
-							 pbuf[i+3] = PPRZ_RSSI_ID;
-							 ck_a_tx += pbuf[i+3];
-							 ck_b_tx += ck_a_tx;
+#ifdef PPRZLINK_GEC
+                     pbuf[i] = PPRZ_CRYPTO_BYTE; // crypto byte (plaintex)
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
+#endif
 
-							 pbuf[i+4] = remote_statistics.average_rssi; // ac rssi
-							 ck_a_tx += pbuf[i+4];
-							 ck_b_tx += ck_a_tx;
+#if defined PPRZLINK_2 || defined PPRZLINK_GEC
+                     pbuf[i] = PPRZ_GCS_ID; // Dest ID (typically zero for GCS)
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
 
-							 pbuf[i+5] = settings.transmit_power; // tx power
-							 ck_a_tx += pbuf[i+5];
-							 ck_b_tx += ck_a_tx;
+                     pbuf[i] = PPRZ_TELEMETRY_ID; // class/component ID (1 for telemetry)
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
+#endif
 
-							 pbuf[i+6] = statistics.average_rssi; // gcs rssi
-							 ck_a_tx += pbuf[i+6];
-							 ck_b_tx += ck_a_tx;
+                     pbuf[i] = PPRZ_RSSI_ID; // MSG ID
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
 
-							 pbuf[i+7] = statistics.average_noise; // gcs noise
-							 ck_a_tx += pbuf[i+7];
-							 ck_b_tx += ck_a_tx;
+                     pbuf[i] = remote_statistics.average_rssi; // ac rssi
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
 
-							 pbuf[i+8] = remote_statistics.average_noise; // ac noise
-							 ck_a_tx += pbuf[i+8];
-							 ck_b_tx += ck_a_tx;
+                     pbuf[i] = settings.transmit_power; // tx power
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
 
-							 pbuf[i+9] = ck_a_tx;
-							 pbuf[i+10] = ck_b_tx;
+                     pbuf[i] = statistics.average_rssi; // gcs rssi
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
 
-							 len = i+PPRZ_RSSI_LENGTH;
+                     pbuf[i] = statistics.average_noise; // gcs noise
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
 
-							 // break from the loop
-							 break;
-						 }
-					 }
-				 }
+                     pbuf[i] = remote_statistics.average_noise; // ac noise
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
+
+                     pbuf[i] = ck_a_tx;
+                     i++;
+                     pbuf[i] = ck_b_tx;
+                     i++;
+
+                     len = i;
+
+                     // break from the loop
+                     break;
+                   }
+                 }
+               }
              }
 
              LED_ACTIVITY = LED_ON;

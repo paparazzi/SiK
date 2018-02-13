@@ -74,10 +74,50 @@ extern void packet_inject(__xdata uint8_t *buf, __pdata uint8_t len);
 #define MAVLINK10_STX 254
 #define MAVLINK20_STX 253
 
-// pprzlink markers
-#define PPRZ_STX  0x99
-#define PPRZ_RSSI_ID 39
-#define PPRZ_RSSI_LENGTH 11
-#define PPRZ_PONG_ID 3
-#define PPRZ_PONG_LENGTH 6
+#define PPRZLINK_1 // TODO: add as a flag to makefile
 
+#if defined PPRZLINK_1 || defined PPRZLINK_2 || defined PPRZLINK_GEC
+
+#define PPRZ_GCS_ID 0
+#define PPRZ_TELEMETRY_ID 1
+
+#ifdef PPRZLINK_1
+  #define PPRZ_STX  0x99
+  #define PPRZ_RSSI_ID 39
+  #define PPRZ_RSSI_LENGTH 11
+  #define PPRZ_PONG_ID 3
+  #define PPRZ_PONG_LENGTH 6 // 1 stx + 2 len + 3 sender id + 4 msg id + 5 chksm A + 6 chksm B
+  #define PPRZ_LENGTH_IDX 1 // offset from the start of the buffer
+  #define PPRZ_SENDER_ID_IDX 2 // offset from the start of the buffer
+  #define PPRZ_MSG_ID_IDX 3 // offset from the start of the buffer
+#endif // PPRZLINK 1.0
+
+// pprzlink markers
+#ifdef PPRZLINK_2
+  #define PPRZ_STX  0x99
+  #define PPRZ_RSSI_ID 39
+  #define PPRZ_RSSI_LENGTH 13 // we have two extra bytes
+  #define PPRZ_PONG_ID 3
+  #define PPRZ_PONG_LENGTH 8 // 1 stx + 2 len + 3 sender id + 4 dest id + 5 class id + 6 msg id + 7 chksm A + 8 chksm B
+  #define PPRZ_LENGTH_IDX 1 // offset from the start of the buffer
+  #define PPRZ_SENDER_ID_IDX 2 // offset from the start of the buffer
+  #define PPRZ_MSG_ID_IDX 5 // offset from the start of the buffer
+#endif // PPRZLINK 2.0
+
+#ifdef PPRZLINK_GEC
+#error "Encrypted link is not supported yet"
+  // we have an extra crypto byte at the beginning
+  #define PPRZ_STX  0x99
+  #define PPRZ_RSSI_ID 39
+  #define PPRZ_RSSI_LENGTH 13
+  #define PPRZ_PONG_ID 3
+  #define PPRZ_PONG_LENGTH 9 // 9 for plaintext case, 29 for encrypted case
+  #define PPRZ_LENGTH_IDX 1 // offset from the start of the buffer
+  #define PPRZ_SENDER_ID_IDX 3 // offset from the start of the buffer
+  #define PPRZ_MSG_ID_IDX 6 // offset from the start of the buffer
+  #define PPRZ_CRYPTO_BYTE 0xaa // TODO: verify the value
+#endif // PPRZLINK 2.0 encrypted
+
+#else
+#error "Please define Pprzlink version (PPRZLINK_1, PPRZLINK_2, PPRZLINK_GEC)"
+#endif
