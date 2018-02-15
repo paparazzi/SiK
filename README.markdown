@@ -4,6 +4,13 @@ Firmware for SiLabs Si1000 - Si102x/3x ISM radios
 
 SiK is a collection of firmware and tools for radios based on the cheap, versatile SiLabs Si1000 SoC.
 
+## Paparazzi RSSI enable
+Step by step instructions:
+- First, decide which version of PPrzlink are you going to use - version 1 (default) or version 2.
+- If version 2, change [this line](https://github.com/paparazzi/SiK/blob/pprz_rssi/Firmware/radio/packet.h#L77) to `PPRZLINK_2`
+- make, make clean and flash
+- you should see `RSSI_COMBINED` message
+
 ## Branch Build Status
 [![Build Status](http://jenkins.hovo.id.au/buildStatus/icon?job=SiK)](http://jenkins.hovo.id.au/job/SiK/)
 
