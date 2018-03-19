@@ -105,7 +105,6 @@ extern void packet_inject(__xdata uint8_t *buf, __pdata uint8_t len);
 #endif // PPRZLINK 2.0
 
 #ifdef PPRZLINK_GEC
-#error "Encrypted link is not supported yet"
   // we have an extra crypto byte at the beginning
   #define PPRZ_STX  0x99
   #define PPRZ_RSSI_ID 39
