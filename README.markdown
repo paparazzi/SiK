@@ -8,7 +8,7 @@ SiK is a collection of firmware and tools for radios based on the cheap, versati
 Step by step instructions:
 - First, decide which version of PPrzlink are you going to use - version 1 (default) or version 2.
 - If you are version 2, change [this line](https://github.com/paparazzi/SiK/blob/pprz_rssi/Firmware/radio/packet.h#L77) to `PPRZLINK_2`
-- If you are using [secure pprzlink](https://wiki.paparazziuav.org/wiki/Pprzlink#Secure_Ppprzlink) change the line to `PPRZLINK_GEC`
+- If you are using [secure pprzlink](https://wiki.paparazziuav.org/wiki/Pprzlink#Secure_Ppprzlink) change the line to `PPRZLINK_1_GEC` (this is for secure Pprzlink 1.0)
 - make, make clean and flash
 - you should see `RSSI_COMBINED` message
 
