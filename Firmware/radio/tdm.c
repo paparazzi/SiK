@@ -631,10 +631,13 @@ tdm_serial_loop(void)
                  }
                }
 
+
                // check if there is enough space in the buffer
                if ((len+PPRZ_RSSI_LENGTH) < sizeof(pbuf)){
                  __pdata uint8_t i;
                  for(i=0;i<len-PPRZ_MSG_ID_IDX;i++){
+
+#if defined PPRZLINK_1 || defined PPRZLINK_2
                    // check if we have
                    // PPRZ_STX header
                    // and PONG_LENGTH
@@ -642,6 +645,17 @@ tdm_serial_loop(void)
                    if (pbuf[i]==PPRZ_STX && // STX byte
                        pbuf[i+PPRZ_LENGTH_IDX]==PPRZ_PONG_LENGTH && // correct length
                        pbuf[i+PPRZ_MSG_ID_IDX]==PPRZ_PONG_ID) { // correct ID
+#else
+#ifdef PPRZLINK_1_GEC
+                     // check STX
+                     // check crypto byte (is encrypted)
+                     // check message length
+                     if (pbuf[i]==PPRZ_STX && // STX byte
+                         pbuf[i+PPRZ_LENGTH_IDX]==PPRZ_PONG_LENGTH && // correct length
+                         pbuf[i+PPRZ_CRYPTO_BYTE_IDX]==PPRZ_CRYPTO_BYTE_ENCRYPTED) { // correct crypto byte
+#endif // PPRZLINK_1_GEC
+
+#endif // defined PPRZLINK_1 || defined PPRZLINK_2
                      // we need to send RSSI, lets just add RSSI after PONG
                      // - sadly we loose the data that come after
 
@@ -658,19 +672,19 @@ tdm_serial_loop(void)
                      ck_b_tx += ck_a_tx;
                      i++;
 
-                     pbuf[i] = rx_ac_id; // SENDER ID
-                     ck_a_tx += pbuf[i];
-                     ck_b_tx += ck_a_tx;
-                     i++;
-
-#ifdef PPRZLINK_GEC
-                     pbuf[i] = PPRZ_CRYPTO_BYTE; // crypto byte (plaintex)
+#ifdef PPRZLINK_1_GEC
+                     pbuf[i] = PPRZ_CRYPTO_BYTE_PLAINTEXT; // crypto byte (plaintex)
                      ck_a_tx += pbuf[i];
                      ck_b_tx += ck_a_tx;
                      i++;
 #endif
 
-#if defined PPRZLINK_2 || defined PPRZLINK_GEC
+                     pbuf[i] = rx_ac_id; // SENDER ID
+                     ck_a_tx += pbuf[i];
+                     ck_b_tx += ck_a_tx;
+                     i++;
+
+#if defined PPRZLINK_2 || defined PPRZLINK_2_GEC
                      pbuf[i] = PPRZ_GCS_ID; // Dest ID (typically zero for GCS)
                      ck_a_tx += pbuf[i];
                      ck_b_tx += ck_a_tx;
@@ -724,7 +738,7 @@ tdm_serial_loop(void)
                    }
                  }
                }
-             }
+             } // feature_pprzlink_rssi
 
              LED_ACTIVITY = LED_ON;
              serial_write_buf(pbuf, len);

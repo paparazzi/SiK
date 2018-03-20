@@ -104,18 +104,20 @@ extern void packet_inject(__xdata uint8_t *buf, __pdata uint8_t len);
   #define PPRZ_MSG_ID_IDX 5 // offset from the start of the buffer
 #endif // PPRZLINK 2.0
 
-#ifdef PPRZLINK_GEC
+#ifdef PPRZLINK_1_GEC
+  // Currently for Pprzlink 1.0 only
   // we have an extra crypto byte at the beginning
   #define PPRZ_STX  0x99
   #define PPRZ_RSSI_ID 39
-  #define PPRZ_RSSI_LENGTH 13
-  #define PPRZ_PONG_ID 3
-  #define PPRZ_PONG_LENGTH 9 // 9 for plaintext case, 29 for encrypted case
+  #define PPRZ_RSSI_LENGTH 12 // 5 bytes payload + 7 bytes overhead
+  #define PPRZ_PONG_LENGTH 27 // encrypted PONG length
   #define PPRZ_LENGTH_IDX 1 // offset from the start of the buffer
-  #define PPRZ_SENDER_ID_IDX 3 // offset from the start of the buffer
-  #define PPRZ_MSG_ID_IDX 6 // offset from the start of the buffer
-  #define PPRZ_CRYPTO_BYTE 0xaa // TODO: verify the value
-#endif // PPRZLINK 2.0 encrypted
+  #define PPRZ_CRYPTO_BYTE_IDX 2 // offset from the start of the buffer
+  #define PPRZ_SENDER_ID_IDX 7 // offset from the start of the buffer
+  #define PPRZ_CRYPTO_BYTE_PLAINTEXT 0xaa // plaintext value
+  #define PPRZ_CRYPTO_BYTE_ENCRYPTED 0x55 // encrypted message
+  #define PPRZ_MSG_ID_IDX 8 // offset from the start of the buffer
+#endif // PPRZLINK 1.0 encrypted
 
 #else
 #error "Please define Pprzlink version (PPRZLINK_1, PPRZLINK_2, PPRZLINK_GEC)"
