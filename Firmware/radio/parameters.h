@@ -62,7 +62,8 @@ enum ParamID {
 	PARAM_MANCHESTER,		// enable manchester encoding
 	PARAM_RTSCTS,			// enable hardware flow control
 	PARAM_MAX_WINDOW,		// The maximum window size allowed
-  	PARAM_PPRZLINK,			// if 1 then inject RSSI PPRZLINK packet into the incoming data stream
+  PARAM_PPRZLINK,			// if 1 then inject RSSI PPRZLINK packet into the incoming data stream (PPRZLINK version has to be defined)
+  PARAM_PPRZLINK_SENDER_ID, // optional Pprzlink sender ID (0 by default)
 #ifdef INCLUDE_AES
   PARAM_ENCRYPTION,     // no Enycryption (0), 128 or 256 bit key
 #endif

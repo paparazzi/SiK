@@ -27,6 +27,7 @@
 #
 # Common rules and targets for the HopeRF radio apps
 #
+PPRZLINK_VERSION ?= PPRZLINK_1
 
 ifeq ($(BOARD),)
 $(error Must define BOARD before attempting to build)
@@ -55,6 +56,7 @@ endif
 # Common build options.
 #
 CFLAGS		+=	-DBOARD_$(BOARD)
+CFLAGS		+=	-D$(PPRZLINK_VERSION)=1
 
 #
 # Paths.

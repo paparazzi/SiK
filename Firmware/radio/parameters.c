@@ -71,6 +71,7 @@ __code const struct parameter_info {
 	{"RTSCTS",          0},
 	{"MAX_WINDOW",    131},
 	{"PPRZLINK",	    1},
+	{"PPRZLINK_SENDER_ID", 0},
 #ifdef INCLUDE_AES
 	{"ENCRYPTION_LEVEL", 0}, // no Enycryption (0), 128 or 256 bit key
 #endif
@@ -169,9 +170,16 @@ param_check(__pdata enum ParamID id, __data uint32_t val)
 		break;
 
 	case PARAM_PPRZLINK:
+	  // allowed values are {0,1}
 		if (val >1)
 			return false;
 		break;
+
+  case PARAM_PPRZLINK_SENDER_ID:
+    // allowed values are {0,255}
+    if (val > 255)
+      return false;
+    break;
 
 	default:
 		// no sanity check for this value
@@ -227,6 +235,11 @@ param_set(__data enum ParamID param, __pdata param_t value)
 		feature_pprzlink_rssi = (uint8_t) value;
 		value = feature_pprzlink_rssi;
 		break;
+
+	case PARAM_PPRZLINK_SENDER_ID:
+	  rx_ac_id = (uint8_t) value;
+	  value = rx_ac_id;
+	  break;
 
 	default:
 		break;

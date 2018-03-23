@@ -646,14 +646,14 @@ tdm_serial_loop(void)
                        pbuf[i+PPRZ_LENGTH_IDX]==PPRZ_PONG_LENGTH && // correct length
                        pbuf[i+PPRZ_MSG_ID_IDX]==PPRZ_PONG_ID) { // correct ID
 #else
-#ifdef PPRZLINK_1_GEC
+#if defined PPRZLINK_1_GEC || defined PPRZLINK_2_GEC
                      // check STX
                      // check crypto byte (is encrypted)
                      // check message length
                      if (pbuf[i]==PPRZ_STX && // STX byte
                          pbuf[i+PPRZ_LENGTH_IDX]==PPRZ_PONG_LENGTH && // correct length
                          pbuf[i+PPRZ_CRYPTO_BYTE_IDX]==PPRZ_CRYPTO_BYTE_ENCRYPTED) { // correct crypto byte
-#endif // PPRZLINK_1_GEC
+#endif // defined PPRZLINK_1_GEC || defined PPRZLINK_2_GEC
 
 #endif // defined PPRZLINK_1 || defined PPRZLINK_2
                      // we need to send RSSI, lets just add RSSI after PONG
@@ -672,12 +672,12 @@ tdm_serial_loop(void)
                      ck_b_tx += ck_a_tx;
                      i++;
 
-#ifdef PPRZLINK_1_GEC
+#if defined PPRZLINK_1_GEC || defined PPRZLINK_2_GEC
                      pbuf[i] = PPRZ_CRYPTO_BYTE_PLAINTEXT; // crypto byte (plaintex)
                      ck_a_tx += pbuf[i];
                      ck_b_tx += ck_a_tx;
                      i++;
-#endif
+#endif // GEC only
 
                      pbuf[i] = rx_ac_id; // SENDER ID
                      ck_a_tx += pbuf[i];
@@ -694,7 +694,7 @@ tdm_serial_loop(void)
                      ck_a_tx += pbuf[i];
                      ck_b_tx += ck_a_tx;
                      i++;
-#endif
+#endif // Pprzlink 2.0 only
 
                      pbuf[i] = PPRZ_RSSI_ID; // MSG ID
                      ck_a_tx += pbuf[i];

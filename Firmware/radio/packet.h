@@ -74,9 +74,7 @@ extern void packet_inject(__xdata uint8_t *buf, __pdata uint8_t len);
 #define MAVLINK10_STX 254
 #define MAVLINK20_STX 253
 
-#define PPRZLINK_1 // TODO: add as a flag to makefile
-
-#if defined PPRZLINK_1 || defined PPRZLINK_2 || defined PPRZLINK_GEC
+#if defined PPRZLINK_1 || defined PPRZLINK_2 || defined PPRZLINK_1_GEC || PPRZLINK_2_GEC
 
 #define PPRZ_GCS_ID 0
 #define PPRZ_TELEMETRY_ID 1
@@ -105,7 +103,7 @@ extern void packet_inject(__xdata uint8_t *buf, __pdata uint8_t len);
 #endif // PPRZLINK 2.0
 
 #ifdef PPRZLINK_1_GEC
-  // Currently for Pprzlink 1.0 only
+  // For Pprzlink 1.0 only
   // we have an extra crypto byte at the beginning
   #define PPRZ_STX  0x99
   #define PPRZ_RSSI_ID 39
@@ -119,6 +117,19 @@ extern void packet_inject(__xdata uint8_t *buf, __pdata uint8_t len);
   #define PPRZ_MSG_ID_IDX 8 // offset from the start of the buffer
 #endif // PPRZLINK 1.0 encrypted
 
-#else
-#error "Please define Pprzlink version (PPRZLINK_1, PPRZLINK_2, PPRZLINK_GEC)"
-#endif
+#ifdef PPRZLINK_2_GEC
+  // For Pprzlink 2.0 only
+  // we have an extra crypto byte at the beginning
+  #define PPRZ_STX  0x99
+  #define PPRZ_RSSI_ID 39
+  #define PPRZ_RSSI_LENGTH 14 // 5 bytes payload + 9 bytes overhead
+  #define PPRZ_PONG_LENGTH 29 // encrypted PONG length
+  #define PPRZ_LENGTH_IDX 1 // offset from the start of the buffer
+  #define PPRZ_CRYPTO_BYTE_IDX 2 // offset from the start of the buffer
+  #define PPRZ_SENDER_ID_IDX 7 // offset from the start of the buffer
+  #define PPRZ_CRYPTO_BYTE_PLAINTEXT 0xaa // plaintext value
+  #define PPRZ_CRYPTO_BYTE_ENCRYPTED 0x55 // encrypted message
+  #define PPRZ_MSG_ID_IDX 10 // offset from the start of the buffer
+#endif // PPRZLINK 2.0 encrypted
+
+#endif // Pprzlink
