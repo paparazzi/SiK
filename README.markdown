@@ -6,11 +6,16 @@ SiK is a collection of firmware and tools for radios based on the cheap, versati
 
 ## Paparazzi RSSI enable
 Step by step instructions:
-- First, decide which version of PPrzlink are you going to use - version 1 (default) or version 2.
-- If you are version 2, change [this line](https://github.com/paparazzi/SiK/blob/pprz_rssi/Firmware/radio/packet.h#L77) to `PPRZLINK_2`
-- If you are using [secure pprzlink](https://wiki.paparazziuav.org/wiki/Pprzlink#Secure_Ppprzlink) change the line to `PPRZLINK_1_GEC` (this is for secure Pprzlink 1.0)
-- make, make clean and flash
-- you should see `RSSI_COMBINED` message
+- Enable pprzlink support by changing `PPRZLINK` param to `1` [here](https://github.com/paparazzi/SiK/blob/pprz_rssi/Firmware/radio/parameters.c#L73)
+- If you want a specific sender ID assigned to your modem (so it shows up as a separate telemetry channel) change the value of `PPRZLINK_SENDER_ID` [here](https://github.com/paparazzi/SiK/blob/pprz_rssi/Firmware/radio/parameters.c#L74) (accepted values are 1-255). If you leave it as 0, then the ID of the connected UAV is used (default)
+- Four types of pprzlink are supported:
+  - Pprzlink 1.0 with `PPPRZLINK_1` flag
+  - Secure Pprzlink 1.0 with `PPPRZLINK_1_GEC` flag
+  - Pprzlink 2.0 with `PPPRZLINK_2` flag
+  - Pprzlink 2.0 with `PPPRZLINK_2_GEC` flag
+- Either change [this](https://github.com/paparazzi/SiK/blob/pprz_rssi/Firmware/include/rules.mk#L30) makefile variable to the pprzlink version you desire to use, or compile with `PPRZLINK_VERSION=PPRZLINK_XXX make yyy` where `XXX` stands for your Pprzlink version, and `yyy` stands for desired make command (build, install etc.)
+- flash your modem
+- now you should see `RSSI_COMBINED` message
 
 ## Branch Build Status
 [![Build Status](http://jenkins.hovo.id.au/buildStatus/icon?job=SiK)](http://jenkins.hovo.id.au/job/SiK/)
