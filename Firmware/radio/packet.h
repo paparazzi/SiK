@@ -111,7 +111,7 @@ extern void packet_inject(__xdata uint8_t *buf, __pdata uint8_t len);
   #define PPRZ_PONG_LENGTH 27 // encrypted PONG length
   #define PPRZ_LENGTH_IDX 1 // offset from the start of the buffer
   #define PPRZ_CRYPTO_BYTE_IDX 2 // offset from the start of the buffer
-  #define PPRZ_SENDER_ID_IDX 7 // offset from the start of the buffer
+  #define PPRZ_SENDER_ID_IDX 3 // offset from the start of the buffer
   #define PPRZ_CRYPTO_BYTE_PLAINTEXT 0xaa // plaintext value
   #define PPRZ_CRYPTO_BYTE_ENCRYPTED 0x55 // encrypted message
   #define PPRZ_MSG_ID_IDX 8 // offset from the start of the buffer
@@ -126,7 +126,7 @@ extern void packet_inject(__xdata uint8_t *buf, __pdata uint8_t len);
   #define PPRZ_PONG_LENGTH 29 // encrypted PONG length
   #define PPRZ_LENGTH_IDX 1 // offset from the start of the buffer
   #define PPRZ_CRYPTO_BYTE_IDX 2 // offset from the start of the buffer
-  #define PPRZ_SENDER_ID_IDX 7 // offset from the start of the buffer
+  #define PPRZ_SENDER_ID_IDX 3 // offset from the start of the buffer
   #define PPRZ_CRYPTO_BYTE_PLAINTEXT 0xaa // plaintext value
   #define PPRZ_CRYPTO_BYTE_ENCRYPTED 0x55 // encrypted message
   #define PPRZ_MSG_ID_IDX 10 // offset from the start of the buffer
