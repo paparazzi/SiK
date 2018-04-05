@@ -14,8 +14,9 @@ Step by step instructions:
   - Pprzlink 2.0 with `PPPRZLINK_2` flag
   - Pprzlink 2.0 with `PPPRZLINK_2_GEC` flag
 - Either change [this](https://github.com/paparazzi/SiK/blob/pprz_rssi/Firmware/include/rules.mk#L30) makefile variable to the pprzlink version you desire to use, or compile with `PPRZLINK_VERSION=PPRZLINK_XXX make yyy` where `XXX` stands for your Pprzlink version, and `yyy` stands for desired make command (build, install etc.)
-- flash your modem
-- now you should see `RSSI_COMBINED` message
+- note that to make changes in eeprom, you have to do `make install` !
+- flash your modem (`rfd900p` for the RFD900+ modem, `hm_trp` for 3DR radios)
+- now you will see `RSSI_COMBINED` message!
 
 ## Branch Build Status
 [![Build Status](http://jenkins.hovo.id.au/buildStatus/icon?job=SiK)](http://jenkins.hovo.id.au/job/SiK/)
