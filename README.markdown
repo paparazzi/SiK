@@ -15,7 +15,7 @@ Step by step instructions:
   - Pprzlink 2.0 with `PPPRZLINK_2_GEC` flag
 - Either change [this](https://github.com/paparazzi/SiK/blob/pprz_rssi/Firmware/include/rules.mk#L30) makefile variable to the pprzlink version you desire to use, or compile with `PPRZLINK_VERSION=PPRZLINK_XXX make yyy` where `XXX` stands for your Pprzlink version, and `yyy` stands for desired make command (build, install etc.)
 - note that to make changes in eeprom, you have to do `make install` !
-- flash your modem (`rfd900p` for the RFD900+ modem, `hm_trp` for 3DR radios) e.g. `tools/uploader.py --baudrate 57600 --port /dev/ttyUSB0 dst/radio~hm_trp.ihx`
+- flash your modem (`rfd900p` for the RFD900+ modem, `hm_trp` for 3DR radios) e.g. `tools/uploader.py --resetparam --baudrate 57600 --port /dev/ttyUSB0 dst/radio~hm_trp.ihx`
 - now you will see `RSSI_COMBINED` message!
 
 ## Branch Build Status
